@@ -166,7 +166,7 @@ class MutableAclProvider extends AclProvider implements MutableAclProviderInterf
 
             foreach ($this->loadedAcls[$acl->getObjectIdentity()->getType()] as $sameTypeAcl) {
                 if (isset($sharedPropertyChanges['classAces'])) {
-                    if ($acl !== $sameTypeAcl && $classAcesProperty->getValue($sameTypeAcl) !== $sharedPropertyChanges['classAces'][0]) {
+                    if ($acl->getObjectIdentity()->getIdentifier() !== 'class' && $acl !== $sameTypeAcl && $classAcesProperty->getValue($sameTypeAcl) !== $sharedPropertyChanges['classAces'][0]) {
                         throw new ConcurrentModificationException('The "classAces" property has been modified concurrently.');
                     }
 

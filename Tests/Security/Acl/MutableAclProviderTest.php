@@ -235,6 +235,7 @@ class MutableAclProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($changes['aces']->contains($ace));
         $aceChanges = $changes['aces']->offsetGet($ace);
         $this->assertTrue(isset($aceChanges['mask']));
+        $this->assertTrue($this->isIndexedConsec($aceChanges['mask']));
         $this->assertEquals(1, $aceChanges['mask'][0]);
         $this->assertEquals(3, $aceChanges['mask'][1]);
 
@@ -245,7 +246,9 @@ class MutableAclProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($changes['aces']->contains($ace));
         $aceChanges = $changes['aces']->offsetGet($ace);
         $this->assertTrue(isset($aceChanges['mask']));
+        $this->assertTrue($this->isIndexedConsec($aceChanges['mask']));
         $this->assertTrue(isset($aceChanges['strategy']));
+        $this->assertTrue($this->isIndexedConsec($aceChanges['strategy']));
         $this->assertEquals('all', $aceChanges['strategy'][0]);
         $this->assertEquals('any', $aceChanges['strategy'][1]);
 
@@ -254,6 +257,7 @@ class MutableAclProviderTest extends \PHPUnit_Framework_TestCase
         $aceChanges = $changes['aces']->offsetGet($ace);
         $this->assertFalse(isset($aceChanges['mask']));
         $this->assertTrue(isset($aceChanges['strategy']));
+        $this->assertTrue($this->isIndexedConsec($aceChanges['strategy']));
 
         $provider->propertyChanged($ace2, 'mask', 1, 3);
         $provider->propertyChanged($ace, 'strategy', 'any', 'all');
@@ -330,6 +334,7 @@ class MutableAclProviderTest extends \PHPUnit_Framework_TestCase
 
         $acl->insertObjectAce($sid, 1);
         $acl->insertClassAce($sid, 5, 0, false);
+        $acl->insertClassAce($sid, 2, 0, false);
         $acl->insertObjectAce($sid, 2, 1, true);
         $acl->insertClassFieldAce('field', $sid, 2, 0, true);
         $provider->updateAcl($acl);
@@ -518,5 +523,19 @@ class MutableAclProviderTest extends \PHPUnit_Framework_TestCase
     protected function getProvider($cache = null)
     {
         return new MutableAclProvider($this->connection, static::$database, $this->getStrategy(), $this->getOptions(), $cache);
+    }
+
+    protected function isIndexedConsec($array)
+    {
+        $res = false;
+        $cb = false;
+        foreach ($array as $key => $im)
+        {
+            if ($cb !== false && $cb == $key)
+                $res = true;
+            $cb = $key + 1;
+        }
+
+    return $res;
     }
 }

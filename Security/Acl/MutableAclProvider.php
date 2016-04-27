@@ -454,6 +454,7 @@ class MutableAclProvider extends AclProvider implements MutableAclProviderInterf
         $currentIds = array();
         for ($i = 0, $c = count($new); $i < $c; $i++) {
             $ace = $new[$i];
+//        foreach ($new as $i => $ace) {
 
             if (null === $ace->getId()) {
                 $sid = $this->getSecurityIdentityQuery($ace->getSecurityIdentity());
